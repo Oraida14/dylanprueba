@@ -953,7 +953,76 @@ $(window).on('load', function() {
     }
     return false;
   }
-
+/**agregado para la prueba de las etiquetas****************************************************************************************************/
+   document
+    .getElementById('select-location')
+    .addEventListener('change', function (e) {
+      let coords = e.target.value.split(',')
+      map.flyTo(coords, 17)
+    })
+  //
+  // AQUI SE EMPIEZA A USAR LA API
+  fetch(api)
+    .then((res) => res.json())
+    .then((info) => {
+      // console.log(info)
+      var popupOptions = {
+        maxWidth: '500',
+        className: 'custom-popup',
+      }
+      // Se inicia un loop para que verifique el ID y apartir de ahi definir la variable "popupContent" que es la que se muestra al final
+      for (var i = 0; i < info.length; i++) {
+        // console.log('NOMBRE: ' + info[i].NUMERO + '\n' + "NIVEL: " + info[i].VALUE + "\n" + "LATITUD: " + info[i].LAT + "\n" + "LONGITUD: " + info[i].LONG)
+        let inf = info[i]
+        if (inf.ID == 0) {
+          // Si el ID es igual a 0 se muestra lo siguiente:
+          var popupContent = `<h3>${inf.NUMERO}</h3>
+            <hr color="#00008B" size="4"><table border='0' style='font-size:12x;'><tr><td style='color:#00008B;font-weight:bold;padding-left:10px'><td style="width: 400px;background-color:#DEB887</td><td style="vertical-align: text-middle;">
+            <b>Nivel: </b>${inf.NIVEL}<br>
+            <b>Gasto de Entrada: </b>${inf.GE}<br>
+            <b>Gasto de Salida: </b>${inf.GS}<br>
+            <b>Fecha Actualización: </b>${inf.ACT}
+            </td></tr></table>`
+          // Luego de declarar lo que se va mostrar se agrega al mapa:
+          var marker = L.marker([info[i].LAT, info[i].LONG],{ icon: tanqueIcon })
+            .addTo(map)
+            .bindPopup(popupContent, popupOptions) //Aqui se agrega lo declarado antes y la variable global "popupOptions"
+        } else if (inf.ID == 1) {
+          // Si el ID es igual a 1 se muestra lo siguiente:
+          var popupContent = `<h3>${inf.NUMERO}</h3>
+            <hr color="#00008B" size="4"><table border='0' style='font-size:12x;'><tr><td style='color:#00008B;font-weight:bold;padding-left:10px'><td style="width: 400px;background-color:#DEB887</td><td style="vertical-align: text-middle;">
+            <b>Presión de Entrada: </b>${inf.PE}<br>
+            <b>Presión de Salida: </b>${inf.PS}<br>
+            <b>Gasto de Entrada: </b>${inf.GE}<br>
+            <b>Fecha Actualización: </b>${inf.ACT}
+            </td></tr></table>`
+          var marker = L.marker([info[i].LAT, info[i].LONG],{ icon: dataIcon })
+            .addTo(map)
+            .bindPopup(popupContent, popupOptions)
+        } else if (inf.ID == 2) {
+          // Si el ID es igual a 2 se muestra lo siguiente:
+          var popupContent = `<h3>${inf.NUMERO}</h3>
+            <hr color="#00008B" size="4"><table border='0' style='font-size:12x;'><tr><td style='color:#00008B;font-weight:bold;padding-left:10px'><td style="width: 400px;background-color:#DEB887</td><td style="vertical-align: text-middle;">
+            <b>Gasto de Salida: </b>${inf.GS}<br>
+            <b>Presión: </b>${inf.PS}<br>
+            <b>Estatus: </b>${inf.EST}<br>
+            <b>Fecha Actualización: </b>${inf.ACT}
+            </td></tr></table>`
+          var marker = L.marker([info[i].LAT, info[i].LONG],{ icon: pozoIcon })
+            .addTo(map)
+            .bindPopup(popupContent, popupOptions)
+        } else {
+          console.log('No se econtro ID para: ' + inf.NUMERO)
+        }
+        // Aqui con la informacion sacada de la api obtenemos el NOMBRE y las CORDENADAS
+        var opt = document.createElement('option')
+        opt.value = info[i].LAT + ',' + info[i].LONG //Aqui separa las cordenadas para que sean compatibles con el html
+        opt.innerHTML = info[i].NUMERO //Aqui se obtiene el Nombre
+        select.appendChild(opt) // aqui agrega cada uno a la lista
+      }
+    })
+}
+             /**final de pruebas de las etiquetas****************************************************************************************/
   /**
    * Returns the value of setting named s from constants.js
    * or def if setting is either not set or does not exist
